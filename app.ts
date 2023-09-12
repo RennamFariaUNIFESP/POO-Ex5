@@ -74,7 +74,7 @@ export class App {
     throw new Error('User does not exist.')
   }
 
-  rentBike(bikeId: string, userEmail: string, startDate: Date, endDate: Date): void {
+  rentBike(bikeId: string, userEmail: string, startDate: Date): void {
     const bike = this.bikes.find(bike => bike.id === bikeId)
     if (!bike) {
       throw new Error('Bike not found.')
@@ -83,10 +83,12 @@ export class App {
     if (!user) {
       throw new Error('User not found.')
     }
+    if(!bike.available)
+      throw new Error('Bike is not available.')
     const bikeRents = this.rents.filter(rent =>
-      rent.bike.id === bikeId && !rent.dateReturned
+      rent.bike.id === bikeId)
     )
-    const newRent = Rent.create(bikeRents, bike, user, startDate, endDate)
+    const newRent = Rent.create(bikeRents, bike, user, startDate)
     this.rents.push(newRent)
   }
 
@@ -96,10 +98,10 @@ export class App {
       rent.bike.id === bikeId &&
       rent.user.email === userEmail &&
       rent.dateReturned === undefined &&
-      rent.dateFrom <= today
+      rent.bike.avalible == false
     )
     if (rent) {
-      rent.dateReturned = today
+      bike.avalible = true
       return
     }
     throw new Error('Rent not found.')
